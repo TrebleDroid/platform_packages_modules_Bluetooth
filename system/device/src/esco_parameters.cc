@@ -25,7 +25,8 @@
 #include "hci/controller_interface.h"
 #include "main/shim/entry.h"
 
-static const enh_esco_params_t default_esco_parameters[ESCO_NUM_CODECS] = {
+#include <cutils/properties.h>
+static enh_esco_params_t default_esco_parameters[ESCO_NUM_CODECS] = {
     // CVSD D1
     {
         .transmit_bandwidth = TXRX_64KBITS_RATE,
@@ -352,6 +353,11 @@ enh_esco_params_t esco_parameters_for_codec(esco_codec_t codec, bool offload) {
     }
   }
 
+  int escoTransportUnitSize = property_get_int32("persist.sys.bt.esco_transport_unit_size", 0);
+  if(escoTransportUnitSize) {
+    default_esco_parameters[codec].input_transport_unit_size = escoTransportUnitSize;
+    default_esco_parameters[codec].output_transport_unit_size = escoTransportUnitSize;
+  }
   if (offload) {
     if (codec == ESCO_CODEC_SWB_Q0 || codec == ESCO_CODEC_SWB_Q1 ||
         codec == ESCO_CODEC_SWB_Q2 || codec == ESCO_CODEC_SWB_Q3) {
