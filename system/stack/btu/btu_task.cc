@@ -122,7 +122,7 @@ void main_thread_start_up() {
   }
   if (!main_thread.EnableRealTimeScheduling()) {
 #if defined(__ANDROID__)
-    LOG(FATAL) << __func__ << ": unable to enable real time scheduling";
+    LOG(ERROR) << __func__ << ": unable to enable real time scheduling";
 #else
     LOG(ERROR) << __func__ << ": unable to enable real time scheduling";
 #endif
