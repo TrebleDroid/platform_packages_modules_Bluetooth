@@ -335,7 +335,7 @@ bool btif_a2dp_source_init(void) {
   if (com_android_bluetooth_flags_a2dp_source_null_fixed_queue()) {
     if (!btif_a2dp_source_thread.EnableRealTimeScheduling()) {
 #if defined(__ANDROID__)
-      log::fatal("unable to enable real time scheduling");
+      log::error("unable to enable real time scheduling");
 #endif
     }
   }
@@ -457,7 +457,7 @@ static void btif_a2dp_source_startup_delayed() {
 
   if (!btif_a2dp_source_thread.EnableRealTimeScheduling()) {
 #if defined(__ANDROID__)
-    log::fatal("unable to enable real time scheduling");
+    log::error("unable to enable real time scheduling");
 #endif
   }
   if (!bluetooth::audio::a2dp::init(get_main_thread(), &a2dp_stream_callbacks,
