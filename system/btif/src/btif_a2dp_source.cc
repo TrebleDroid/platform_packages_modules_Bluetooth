@@ -374,7 +374,7 @@ static void btif_a2dp_source_startup_delayed() {
   log::info("state={}", btif_a2dp_source_cb.StateStr());
   if (!btif_a2dp_source_thread.EnableRealTimeScheduling()) {
 #if defined(__ANDROID__)
-    log::fatal("unable to enable real time scheduling");
+    log::error("unable to enable real time scheduling");
 #endif
   }
   if (!bluetooth::audio::a2dp::init(&btif_a2dp_source_thread)) {

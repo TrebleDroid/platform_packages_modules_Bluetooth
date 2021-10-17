@@ -71,7 +71,7 @@ void main_thread_start_up() {
   }
   if (!main_thread.EnableRealTimeScheduling()) {
 #if defined(__ANDROID__)
-    log::fatal("unable to enable real time scheduling");
+    log::error("unable to enable real time scheduling");
 #else
     log::error("unable to enable real time scheduling");
 #endif

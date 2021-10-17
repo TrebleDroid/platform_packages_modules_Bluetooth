@@ -197,7 +197,7 @@ bool btif_a2dp_sink_init() {
   /* Schedule the rest of the operations */
   if (!btif_a2dp_sink_cb.worker_thread.EnableRealTimeScheduling()) {
 #if defined(__ANDROID__)
-    log::fatal("Failed to increase A2DP decoder thread priority");
+    log::error("Failed to increase A2DP decoder thread priority");
 #endif
   }
   btif_a2dp_sink_cb.worker_thread.DoInThread(
