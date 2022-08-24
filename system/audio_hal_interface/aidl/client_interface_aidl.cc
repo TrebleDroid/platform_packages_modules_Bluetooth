@@ -55,7 +55,7 @@ BluetoothAudioClientInterface::BluetoothAudioClientInterface(
 
 bool BluetoothAudioClientInterface::is_aidl_available() {
   auto service = AServiceManager_checkService(
-      kDefaultAudioProviderFactoryInterface.c_str());
+      audioProviderFactoryInterface().c_str());
   return (service != nullptr);
 }
 
@@ -72,7 +72,7 @@ BluetoothAudioClientInterface::GetAudioCapabilities(SessionType session_type) {
   }
   auto provider_factory = IBluetoothAudioProviderFactory::fromBinder(
       ::ndk::SpAIBinder(AServiceManager_getService(
-          kDefaultAudioProviderFactoryInterface.c_str())));
+          audioProviderFactoryInterface().c_str())));
 
   if (provider_factory == nullptr) {
     LOG(ERROR) << __func__ << ", can't get capability from unknown factory";
@@ -100,7 +100,7 @@ void BluetoothAudioClientInterface::FetchAudioProvider() {
   }
   auto provider_factory = IBluetoothAudioProviderFactory::fromBinder(
       ::ndk::SpAIBinder(AServiceManager_getService(
-          kDefaultAudioProviderFactoryInterface.c_str())));
+          audioProviderFactoryInterface().c_str())));
 
   if (provider_factory == nullptr) {
     LOG(ERROR) << __func__ << ", can't get capability from unknown factory";
