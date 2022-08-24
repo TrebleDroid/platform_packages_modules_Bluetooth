@@ -20,6 +20,7 @@
 #include <android/hidl/manager/1.2/IServiceManager.h>
 #include <bluetooth/log.h>
 #include <hidl/ServiceManagement.h>
+#include "osi/include/properties.h"
 
 #include <memory>
 
@@ -33,6 +34,12 @@ using ::aidl::android::hardware::bluetooth::audio::IBluetoothAudioProviderFactor
 
 static const std::string kDefaultAudioProviderFactoryInterface =
         std::string() + IBluetoothAudioProviderFactory::descriptor + "/default";
+static const std::string kSystemAudioProviderFactoryInterface =
+    std::string() + IBluetoothAudioProviderFactory::descriptor + "/sysbta";
+static inline const std::string audioProviderFactoryInterface() {
+  return osi_property_get_bool("persist.bluetooth.system_audio_hal.enabled", false)
+    ? kSystemAudioProviderFactoryInterface : kDefaultAudioProviderFactoryInterface;
+}
 
 std::string toString(BluetoothAudioHalTransport transport) {
   switch (transport) {
@@ -73,7 +80,7 @@ BluetoothAudioHalVersion GetAidlInterfaceVersion() {
   static auto aidl_version = []() -> BluetoothAudioHalVersion {
     int version = 0;
     auto provider_factory = IBluetoothAudioProviderFactory::fromBinder(::ndk::SpAIBinder(
-            AServiceManager_waitForService(kDefaultAudioProviderFactoryInterface.c_str())));
+            AServiceManager_waitForService(audioProviderFactoryInterface().c_str())));
 
     if (provider_factory == nullptr) {
       log::error("getInterfaceVersion: Can't get aidl version from unknown factory");
@@ -138,7 +145,7 @@ android::sp<IBluetoothAudioProvidersFactory_2_0> HalVersionManager::GetProviders
 
 HalVersionManager::HalVersionManager() {
   hal_transport_ = BluetoothAudioHalTransport::UNKNOWN;
-  if (AServiceManager_checkService(kDefaultAudioProviderFactoryInterface.c_str()) != nullptr) {
+  if (AServiceManager_checkService(audioProviderFactoryInterface().c_str()) != nullptr) {
     hal_version_ = GetAidlInterfaceVersion();
     hal_transport_ = BluetoothAudioHalTransport::AIDL;
     return;
