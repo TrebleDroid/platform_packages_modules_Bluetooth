@@ -151,6 +151,7 @@ public class HeadsetStateMachine extends StateMachine {
     private boolean mHasNrecEnabled = false;
     private boolean mHasWbsEnabled = false;
     private boolean mHasSwbEnabled = false;
+    private int mReportScoSampleRate = 0;
     // AT Phone book keeps a group of states used by AT+CPBR commands
     @VisibleForTesting
     final AtPhonebook mPhonebook;
@@ -250,6 +251,7 @@ public class HeadsetStateMachine extends StateMachine {
         mHasWbsEnabled = false;
         mHasNrecEnabled = false;
         mHasSwbEnabled = false;
+        mReportScoSampleRate = 0;
     }
 
     public void dump(StringBuilder sb) {
@@ -483,6 +485,7 @@ public class HeadsetStateMachine extends StateMachine {
             mHasWbsEnabled = false;
             mHasSwbEnabled = false;
             mHasNrecEnabled = false;
+            mReportScoSampleRate = 0;
 
             broadcastStateTransitions();
             logFailureIfNeeded();
@@ -1618,6 +1621,9 @@ public class HeadsetStateMachine extends StateMachine {
                 + " hasWbsEnabled=" + mHasWbsEnabled);
         am.setParameters("bt_lc3_swb=" + (mHasSwbEnabled ? "on" : "off"));
         am.setBluetoothHeadsetProperties(getCurrentDeviceName(), mHasNrecEnabled, mHasWbsEnabled);
+        if (mReportScoSampleRate > 0) {
+            am.setParameters("g_sco_samplerate=" + mReportScoSampleRate);
+        }
     }
 
     @VisibleForTesting
@@ -1761,10 +1767,12 @@ public class HeadsetStateMachine extends StateMachine {
         switch (wbsConfig) {
             case HeadsetHalConstants.BTHF_WBS_YES:
                 mHasWbsEnabled = true;
+                mReportScoSampleRate = 16000;
                 break;
             case HeadsetHalConstants.BTHF_WBS_NO:
             case HeadsetHalConstants.BTHF_WBS_NONE:
                 mHasWbsEnabled = false;
+                mReportScoSampleRate = 8000;
                 break;
             default:
                 Log.e(TAG, "processWBSEvent: unknown wbsConfig " + wbsConfig);
