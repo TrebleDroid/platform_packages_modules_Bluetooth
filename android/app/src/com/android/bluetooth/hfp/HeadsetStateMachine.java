@@ -145,6 +145,7 @@ class HeadsetStateMachine extends StateMachine {
     private boolean mHasWbsEnabled = false;
     private boolean mHasSwbLc3Enabled = false;
     private boolean mHasSwbAptXEnabled = false;
+    private int mReportScoSampleRate = 0;
     // AT Phone book keeps a group of states used by AT+CPBR commands
     @VisibleForTesting final AtPhonebook mPhonebook;
     // HSP specific
@@ -269,6 +270,7 @@ class HeadsetStateMachine extends StateMachine {
         mHasNrecEnabled = false;
         mHasSwbLc3Enabled = false;
         mHasSwbAptXEnabled = false;
+        mReportScoSampleRate = 0;
     }
 
     public void dump(StringBuilder sb) {
@@ -566,6 +568,7 @@ class HeadsetStateMachine extends StateMachine {
             mHasSwbLc3Enabled = false;
             mHasNrecEnabled = false;
             mHasSwbAptXEnabled = false;
+            mReportScoSampleRate = 0;
 
             broadcastStateTransitions();
             logFailureIfNeeded();
@@ -1883,6 +1886,9 @@ class HeadsetStateMachine extends StateMachine {
             am.setParameters("bt_swb=" + (mHasSwbAptXEnabled ? "0" : "65535"));
         }
         am.setBluetoothHeadsetProperties(getCurrentDeviceName(), mHasNrecEnabled, mHasWbsEnabled);
+        if (mReportScoSampleRate > 0) {
+            am.setParameters("g_sco_samplerate=" + mReportScoSampleRate);
+        }
     }
 
     @VisibleForTesting
@@ -2027,6 +2033,7 @@ class HeadsetStateMachine extends StateMachine {
         switch (wbsConfig) {
             case HeadsetHalConstants.BTHF_WBS_YES:
                 mHasWbsEnabled = true;
+                mReportScoSampleRate = 16000;
                 if (mHeadsetService.isAptXSwbEnabled()) {
                     mHasSwbAptXEnabled = false;
                 }
@@ -2034,6 +2041,7 @@ class HeadsetStateMachine extends StateMachine {
             case HeadsetHalConstants.BTHF_WBS_NO:
             case HeadsetHalConstants.BTHF_WBS_NONE:
                 mHasWbsEnabled = false;
+                mReportScoSampleRate = 8000;
                 break;
             default:
                 Log.e(TAG, "processWBSEvent: unknown wbsConfig " + wbsConfig);
