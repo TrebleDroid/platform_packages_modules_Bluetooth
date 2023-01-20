@@ -402,6 +402,10 @@ struct HciLayer::impl {
         auto view = CommandCompleteView::Create(event);
         log::assert_that(view.IsValid(), "assert failed: view.IsValid()");
         auto op_code = view.GetCommandOpCode();
+        if (op_code == OpCode::READ_REMOTE_VERSION_INFORMATION) {
+            log::warn("OpCode 0x%02hx (%s) is not in the command queue, skipped.", op_code, OpCodeText(op_code).c_str());
+            return;
+        }
         log::assert_that(
             op_code == OpCode::NONE,
             "Received {} event with OpCode {} without a waiting command(is the HAL "
