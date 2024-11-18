@@ -209,8 +209,7 @@ struct HciLayer::impl {
 
     bool is_vendor_specific = static_cast<int>(op_code) & (0x3f << 10);
     CommandStatusView status_view = CommandStatusView::Create(event);
-    if (is_vendor_specific && (is_status && !command_queue_.front().waiting_for_status_) &&
-        (status_view.IsValid() && status_view.GetStatus() == ErrorCode::UNKNOWN_HCI_COMMAND)) {
+    if (command_queue_.front().waiting_for_status_ != is_status) {
       // If this is a command status of a vendor specific command, and command complete is expected,
       // we can't treat this as hard failure since we have no way of probing this lack of support at
       // earlier time. Instead we let the command complete handler handle a empty Command Complete
@@ -230,13 +229,7 @@ struct HciLayer::impl {
           command_complete_view.IsValid(), "assert failed: command_complete_view.IsValid()");
       (*command_queue_.front().GetCallback<CommandCompleteView>())(command_complete_view);
     } else {
-      if (command_queue_.front().waiting_for_status_ == is_status) {
-        (*command_queue_.front().GetCallback<TResponse>())(std::move(response_view));
-      } else {
-        CommandCompleteView command_complete_view = CommandCompleteView::Create(
-            EventView::Create(PacketView<kLittleEndian>(std::make_shared<std::vector<uint8_t>>(std::vector<uint8_t>()))));
-        (*command_queue_.front().GetCallback<CommandCompleteView>())(std::move(command_complete_view));
-      }
+      (*command_queue_.front().GetCallback<TResponse>())(std::move(response_view));
     }
 
 #ifdef TARGET_FLOSS
