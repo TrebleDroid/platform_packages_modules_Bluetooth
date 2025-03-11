@@ -60,7 +60,7 @@ constexpr uint8_t kDataStatusBits = 5;
 
 // system properties
 const std::string kLeRxPathLossCompProperty = "bluetooth.hardware.radio.le_rx_path_loss_comp_db";
-const std::string kPropertyDisableApcfExtendedFeatures = "bluetooth.le.disable_apcf_extended_features";
+const std::string kPropertyDisableApcfExtendedFeatures = "persist.sys.bt.le.disable_apcf_extended_features";
 bool kDisableApcfExtendedFeatures = false;
 
 const ModuleFactory LeScanningManager::Factory =
