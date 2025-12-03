@@ -508,8 +508,8 @@ bool UpdateOffloadingCapabilities(
         break;
       case BTAV_A2DP_CODEC_INDEX_MAX:
       default:
-        log::error("Unknown codec_type={}", preference.codec_type);
-        return false;
+        log::error("Unknown codec_type={}. Ignore.", preference.codec_type);
+        break;
     }
   }
   offloading_preference.clear();
